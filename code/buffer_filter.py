@@ -3,7 +3,7 @@ import re
 
 class BufferFilter:
     def __init__(self, exclude_pattern):
-        self.exclude_pattern = exclude_pattern
+        self.exclude_pattern = re.compile(exclude_pattern)
         self.buffer = []
         self.file_buffer = []
         self.chunk_buffer = []
@@ -31,7 +31,8 @@ class BufferFilter:
             self.file_buffer.append(line)
 
         # output if linechanged
-        if self.is_in_chunk and has_changed(line):
+        if self.is_in_chunk and has_changed(line) \
+                and not is_excluded(self.exclude_pattern, line):
             self.has_chunk_changed = True
             self.has_file_changed = True
             output += self.clear_file_buffer()
@@ -105,3 +106,7 @@ def has_changed(line):
 
 def is_file_start(line):
     return match(file_start, line)
+
+
+def is_excluded(exclude_pattern, line):
+    return match(exclude_pattern, line)

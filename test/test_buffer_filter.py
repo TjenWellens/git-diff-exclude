@@ -1,5 +1,5 @@
 import unittest
-from code.buffer_filter import BufferFilter, is_chunk_start, has_changed, is_file_start
+from code.buffer_filter import BufferFilter, is_chunk_start, has_changed, is_file_start, is_excluded
 
 file_header = [
     'diff --git a/app/src/main/res/values/ids.xml b/app/src/main/res/values/ids.xml',
@@ -124,3 +124,43 @@ class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(expected, output)
+
+
+# filtered_chunk = chunk[:1] + chunk[5:]
+# FILE_CHANGED_FILTERED = file_header + filtered_chunk
+filtered_line = chunk[3]
+
+unfiltered_chunk = [
+    '@@ -0,0 +1,4 @@',
+    '+foo1',
+    '+foo2',
+    '+    foo3',
+    '+foo4',
+    '\ No newline at end of file',
+    '',
+]
+
+
+class BufferFilterTestFilter(unittest.TestCase):
+    def setUp(self):
+        self.buffer_filter = BufferFilter('^\+ *<')
+
+    def compare_input_lines(self, expected, input_lines):
+        output = []
+        for line in input_lines:
+            output += self.buffer_filter.add_line_to_buffer(line)
+        output += self.buffer_filter.add_line_to_buffer(None)
+        self.assertListEqual(expected, output)
+
+    def test_is_excluded(self):
+        self.assertTrue(is_excluded(self.buffer_filter.exclude_pattern, filtered_line))
+
+    def test_filtered_chunk_returns_empty(self):
+        input_lines = FILE_CHANGED
+        expected = []
+        self.compare_input_lines(expected, input_lines)
+
+    def test_filtered_chunk_unfiltered_chunk_returns_unfiltered_chunk(self):
+        input_lines = file_header + chunk + unfiltered_chunk
+        expected = file_header + unfiltered_chunk
+        self.compare_input_lines(expected, input_lines)
