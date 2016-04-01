@@ -80,7 +80,7 @@ class BufferFilterTest(unittest.TestCase):
         output += self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(input_lines, output)
 
-    def test_unchanged_buffer(self):
+    def test_unchanged_chunk(self):
         output = []
         input_lines = file_header + chunk + unchanged_chunk
         expected = file_header + chunk
@@ -89,7 +89,7 @@ class BufferFilterTest(unittest.TestCase):
         output += self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(expected, output)
 
-    def test_unchanged_buffer_at_beginning_of_file(self):
+    def test_unchanged_chunk_at_beginning_of_file(self):
         output = []
         input_lines = file_header + unchanged_chunk + chunk
         expected = file_header + chunk
@@ -97,3 +97,12 @@ class BufferFilterTest(unittest.TestCase):
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(expected, output)
+
+    def test_unchanged_chunks_only(self):
+        output = []
+        input_lines = file_header + unchanged_chunk + unchanged_chunk
+        expected = file_header + chunk
+        for line in input_lines:
+            output += self.buffer_filter.add_line_to_buffer(line)
+        output += self.buffer_filter.add_line_to_buffer(None)
+        self.assertListEqual([], output)
