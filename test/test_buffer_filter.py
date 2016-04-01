@@ -52,10 +52,10 @@ class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
     def test_is_file_start(self):
         self.assertTrue(is_file_start(file_header[0]))
 
-    def test_one_buffer(self):
+    def test_one_chunk(self):
         self.compare_input_lines(FILE_CHANGED, FILE_CHANGED)
 
-    def test_one_buffer_return_at_line_change(self):
+    def test_one_chunk_return_at_line_change(self):
         # no return
         for line in file_header:
             self.buffer_filter.add_line_to_buffer(line)
@@ -78,7 +78,7 @@ class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
         output = self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(unchanged_end_lines, output)
 
-    def test_two_buffers(self):
+    def test_two_chunks(self):
         input_lines = file_header + chunk + chunk
         expected = input_lines
         self.compare_input_lines(expected, input_lines)
@@ -99,7 +99,7 @@ class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
         self.compare_input_lines(expected, input_lines)
 
     def test_multiple_files(self):
-        input_lines = FILE_CHANGED *2
+        input_lines = FILE_CHANGED * 2
         expected = input_lines
         self.compare_input_lines(expected, input_lines)
 
