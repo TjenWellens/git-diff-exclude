@@ -9,6 +9,7 @@ class BufferFilter:
         self.chunk_buffer = []
         self.is_in_chunk = False
         self.has_chunk_changed = False
+        self.has_file_changed = False
 
     def add_line_to_buffer(self, line):  # -> [line]
         output = []
@@ -17,20 +18,22 @@ class BufferFilter:
                 output += self.end_chunk()
             return output
 
+        # finish
         if is_file_start(line):
-            output += self.next_chunk()
-            self.is_in_chunk = False
-
-        if is_chunk_start(line):
+            output += self.next_file()
+        elif is_chunk_start(line):
             output += self.next_chunk()
 
+        # add line to correct buffer
         if self.is_in_chunk:
             self.chunk_buffer.append(line)
         else:
             self.file_buffer.append(line)
 
+        # output if linechanged
         if self.is_in_chunk and has_changed(line):
             self.has_chunk_changed = True
+            self.has_file_changed = True
             output += self.clear_file_buffer()
             output += self.clear_chunk_buffer()
 
@@ -50,9 +53,7 @@ class BufferFilter:
         output = []
         if self.is_in_chunk:
             output = self.end_chunk()
-
         self.is_in_chunk = True
-
         return output
 
     def end_chunk(self):
@@ -67,6 +68,18 @@ class BufferFilter:
 
         self.is_in_chunk = False
         self.has_chunk_changed = False
+
+        return output
+
+    def next_file(self):
+        output = []
+        if not self.has_file_changed:
+            self.clear_file_buffer()
+
+        if self.is_in_chunk:
+            output = self.end_chunk()
+
+        self.has_file_changed = False
 
         return output
 
