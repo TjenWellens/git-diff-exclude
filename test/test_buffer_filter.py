@@ -29,7 +29,8 @@ unchanged_chunk = [
     '',
 ]
 
-input_lines = file_header + chunk
+FILE_CHANGED = file_header + chunk
+FILE_UNCHANGED = file_header + unchanged_chunk
 changed_chunk_lines = chunk[1:5]
 unchanged_end_lines = [chunk[5]]
 
@@ -52,21 +53,17 @@ class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
         self.assertTrue(is_file_start(file_header[0]))
 
     def test_one_buffer(self):
-        output = []
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(input_lines, output)
+        self.compare_input_lines(FILE_CHANGED, FILE_CHANGED)
 
     def test_one_buffer_return_at_line_change(self):
         # no return
         for line in file_header:
             self.buffer_filter.add_line_to_buffer(line)
-        self.buffer_filter.add_line_to_buffer(input_lines[CHUNK_START])
+        self.buffer_filter.add_line_to_buffer(FILE_CHANGED[CHUNK_START])
 
         # all lines up till now
         output = self.buffer_filter.add_line_to_buffer(changed_chunk_lines[FIRST])
-        self.assertListEqual(input_lines[:7], output)
+        self.assertListEqual(FILE_CHANGED[:7], output)
 
         # changed lines one by one
         for line in changed_chunk_lines[SECOND:]:
@@ -82,71 +79,47 @@ class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
         self.assertListEqual(unchanged_end_lines, output)
 
     def test_two_buffers(self):
-        output = []
         input_lines = file_header + chunk + chunk
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(input_lines, output)
+        expected = input_lines
+        self.compare_input_lines(expected, input_lines)
 
     def test_unchanged_chunk(self):
-        output = []
         input_lines = file_header + chunk + unchanged_chunk
-        expected = file_header + chunk
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(expected, output)
+        expected = FILE_CHANGED
+        self.compare_input_lines(expected, input_lines)
 
     def test_unchanged_chunk_at_beginning_of_file(self):
-        output = []
         input_lines = file_header + unchanged_chunk + chunk
-        expected = file_header + chunk
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(expected, output)
+        expected = FILE_CHANGED
+        self.compare_input_lines(expected, input_lines)
 
     def test_unchanged_chunks_only(self):
-        output = []
         input_lines = file_header + unchanged_chunk + unchanged_chunk
-        expected = file_header + chunk
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual([], output)
+        expected = []
+        self.compare_input_lines(expected, input_lines)
 
     def test_multiple_files(self):
-        output = []
-        input_lines = file_header + chunk + file_header + chunk
+        input_lines = FILE_CHANGED *2
         expected = input_lines
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(expected, output)
+        self.compare_input_lines(expected, input_lines)
 
     def test_multiple_files_last_unchanged(self):
-        output = []
-        input_lines = file_header + chunk + file_header + unchanged_chunk
-        expected = file_header + chunk
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(expected, output)
+        input_lines = FILE_CHANGED + FILE_UNCHANGED
+        expected = FILE_CHANGED
+        self.compare_input_lines(expected, input_lines)
 
     def test_multiple_files_first_unchanged(self):
-        output = []
-        input_lines = file_header + unchanged_chunk + file_header + chunk
-        expected = file_header + chunk
-        for line in input_lines:
-            output += self.buffer_filter.add_line_to_buffer(line)
-        output += self.buffer_filter.add_line_to_buffer(None)
-        self.assertListEqual(expected, output)
+        input_lines = FILE_UNCHANGED + FILE_CHANGED
+        expected = FILE_CHANGED
+        self.compare_input_lines(expected, input_lines)
 
     def test_multiple_files_middle_unchanged(self):
+        input_lines = FILE_CHANGED + FILE_UNCHANGED + FILE_CHANGED * 2
+        expected = FILE_CHANGED * 3
+        self.compare_input_lines(expected, input_lines)
+
+    def compare_input_lines(self, expected, input_lines):
         output = []
-        input_lines = file_header + chunk + file_header + unchanged_chunk + file_header + chunk + file_header + chunk
-        expected = file_header + chunk + file_header + chunk + file_header + chunk
         for line in input_lines:
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
