@@ -1,7 +1,11 @@
 import sys
 from code.buffer_filter import BufferFilter
 
-exclude_pattern = "^[+-]import"
+if len(sys.argv) < 2:
+    sys.stderr.write("Syntax error: " + sys.argv[0] + " <exclude-pattern>")
+    exit(1)
+
+exclude_pattern = sys.argv[1]
 buffer_filter = BufferFilter(exclude_pattern)
 
 
