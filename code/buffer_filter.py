@@ -9,21 +9,22 @@ class BufferFilter:
         self.has_chunk_changed = False
 
     def add_line_to_buffer(self, line):  # -> [line]
+        output = []
         if line is None:
             if self.is_in_chunk:
-                return self.end_chunk()
-            return self.clear_buffer()
+                output += self.end_chunk()
+            return output
 
         if is_chunk_start(line):
-            return self.next_chunk(line)
+            output += self.next_chunk(line)
 
         self.buffer.append(line)
 
         if self.is_in_chunk and has_changed(line):
             self.has_chunk_changed = True
-            return self.clear_buffer()
+            output += self.clear_buffer()
 
-        return []
+        return output
 
     def clear_buffer(self):
         buffer = self.buffer
@@ -36,9 +37,6 @@ class BufferFilter:
             output = self.end_chunk()
 
         self.is_in_chunk = True
-
-        # add first line of next chunk
-        self.buffer.append(line)
 
         return output
 
