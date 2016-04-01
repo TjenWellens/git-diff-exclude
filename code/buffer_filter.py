@@ -5,6 +5,8 @@ class BufferFilter:
     def __init__(self, exclude_pattern):
         self.exclude_pattern = exclude_pattern
         self.buffer = []
+        self.file_buffer = []
+        self.chunk_buffer = []
         self.is_in_chunk = False
         self.has_chunk_changed = False
 
@@ -16,22 +18,31 @@ class BufferFilter:
             return output
 
         if is_chunk_start(line):
-            output += self.next_chunk(line)
+            output += self.next_chunk()
 
-        self.buffer.append(line)
+        if self.is_in_chunk:
+            self.chunk_buffer.append(line)
+        else:
+            self.file_buffer.append(line)
 
         if self.is_in_chunk and has_changed(line):
             self.has_chunk_changed = True
-            output += self.clear_buffer()
+            output += self.clear_file_buffer()
+            output += self.clear_chunk_buffer()
 
         return output
 
-    def clear_buffer(self):
-        buffer = self.buffer
-        self.buffer = []
-        return buffer
+    def clear_file_buffer(self):
+        file_buffer = self.file_buffer
+        self.file_buffer = []
+        return file_buffer
 
-    def next_chunk(self, line):
+    def clear_chunk_buffer(self):
+        chunk_buffer = self.chunk_buffer
+        self.chunk_buffer = []
+        return chunk_buffer
+
+    def next_chunk(self):
         output = []
         if self.is_in_chunk:
             output = self.end_chunk()
@@ -43,11 +54,12 @@ class BufferFilter:
     def end_chunk(self):
         output = []
         if self.has_chunk_changed:
-            # print buffer
-            output = self.clear_buffer()
+            # output buffer
+            output += self.clear_file_buffer()
+            output += self.clear_chunk_buffer()
         else:
             # clear buffer, return nothing
-            self.clear_buffer()
+            self.clear_chunk_buffer()
 
         self.is_in_chunk = False
         self.has_chunk_changed = False

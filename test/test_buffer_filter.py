@@ -88,3 +88,12 @@ class BufferFilterTest(unittest.TestCase):
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(expected, output)
+
+    def test_unchanged_buffer_at_beginning_of_file(self):
+        output = []
+        input_lines = file_header + unchanged_chunk + chunk
+        expected = file_header + chunk
+        for line in input_lines:
+            output += self.buffer_filter.add_line_to_buffer(line)
+        output += self.buffer_filter.add_line_to_buffer(None)
+        self.assertListEqual(expected, output)
