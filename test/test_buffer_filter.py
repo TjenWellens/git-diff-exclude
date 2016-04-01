@@ -38,7 +38,7 @@ FIRST = 0
 SECOND = 1
 
 
-class BufferFilterTest(unittest.TestCase):
+class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
     def setUp(self):
         self.buffer_filter = BufferFilter('^\+import')
 
@@ -138,6 +138,15 @@ class BufferFilterTest(unittest.TestCase):
         output = []
         input_lines = file_header + unchanged_chunk + file_header + chunk
         expected = file_header + chunk
+        for line in input_lines:
+            output += self.buffer_filter.add_line_to_buffer(line)
+        output += self.buffer_filter.add_line_to_buffer(None)
+        self.assertListEqual(expected, output)
+
+    def test_multiple_files_middle_unchanged(self):
+        output = []
+        input_lines = file_header + chunk + file_header + unchanged_chunk + file_header + chunk + file_header + chunk
+        expected = file_header + chunk + file_header + chunk + file_header + chunk
         for line in input_lines:
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
