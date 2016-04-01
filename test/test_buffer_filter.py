@@ -15,7 +15,8 @@ chunk = [
     '+<resources>',
     '+    <item name="view_position" type="id"/>',
     '+</resources>',
-    '\ No newline at end of file'
+    '\ No newline at end of file',
+    '',
 ]
 
 unchanged_chunk = [
@@ -24,15 +25,13 @@ unchanged_chunk = [
     '<resources>',
     '    <item name="view_position" type="id"/>',
     '</resources>',
-    '\ No newline at end of file'
-]
-end = [
+    '\ No newline at end of file',
     '',
 ]
 
-input_lines = file_header + chunk + end
+input_lines = file_header + chunk
 changed_chunk_lines = chunk[1:5]
-unchanged_end_lines = [chunk[5]] + end
+unchanged_end_lines = [chunk[5]]
 
 CHUNK_START = len(file_header) + 0
 FIRST = 0
@@ -75,16 +74,16 @@ class BufferFilterTest(unittest.TestCase):
 
     def test_two_buffers(self):
         output = []
-        input_lines = file_header + chunk + chunk + end
+        input_lines = file_header + chunk + chunk
         for line in input_lines:
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
         self.assertListEqual(input_lines, output)
 
-    def test_unchanged_buffers(self):
+    def test_unchanged_buffer(self):
         output = []
-        input_lines = file_header + chunk + unchanged_chunk + end
-        expected = file_header + chunk + end
+        input_lines = file_header + chunk + unchanged_chunk
+        expected = file_header + chunk
         for line in input_lines:
             output += self.buffer_filter.add_line_to_buffer(line)
         output += self.buffer_filter.add_line_to_buffer(None)
