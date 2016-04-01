@@ -17,6 +17,10 @@ class BufferFilter:
                 output += self.end_chunk()
             return output
 
+        if is_file_start(line):
+            output += self.next_chunk()
+            self.is_in_chunk = False
+
         if is_chunk_start(line):
             output += self.next_chunk()
 
@@ -74,6 +78,7 @@ def match(regex, line):
 chunk_start = re.compile(r'@@ [^ ]* [^ ]* @@')
 line_added = re.compile(r'^\+')
 line_removed = re.compile(r'^\-')
+file_start = re.compile(r'^diff --git [^ ]* [^ ]*')
 
 
 def is_chunk_start(line):
@@ -83,3 +88,7 @@ def is_chunk_start(line):
 def has_changed(line):
     return match(line_added, line) \
            or match(line_removed, line)
+
+
+def is_file_start(line):
+    return match(file_start, line)
