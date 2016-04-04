@@ -182,6 +182,13 @@ class NoPatternTest(unittest.TestCase):
         self.compare_input_lines(FILE_CHANGED, FILE_CHANGED)
 
 
+exclude_patterns_all = [
+    '[+-]<\?xml',
+    '[+-]<\/*resources>',
+    '[+-] *<item',
+]
+
+
 class MultiPatternTest(unittest.TestCase):
     def setUp(self):
         pass
@@ -208,3 +215,7 @@ class MultiPatternTest(unittest.TestCase):
         buffer_filter = BufferFilter(exclude_patterns=exclude_patterns)
         line = filtered_line
         self.assertTrue(is_excluded_from_any(buffer_filter.exclude_patterns, line))
+
+    def test_all_changed_excluded(self):
+        self.buffer_filter = BufferFilter(exclude_patterns=exclude_patterns_all)
+        self.compare_input_lines([], FILE_CHANGED)

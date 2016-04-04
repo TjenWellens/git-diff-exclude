@@ -33,7 +33,8 @@ class BufferFilter:
 
         # output if linechanged
         if self.is_in_chunk and has_changed(line) \
-                and not is_excluded(self.exclude_pattern, line):
+                and not is_excluded(self.exclude_pattern, line) \
+                and not is_excluded_from_any(self.exclude_patterns, line):
             self.has_chunk_changed = True
             self.has_file_changed = True
             output += self.clear_file_buffer()
