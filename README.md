@@ -48,3 +48,7 @@ More detailed:
 tip: create an alias
 `alias gde='python ~/git-diff-exclude/script.py'` (make it permanent by putting it in `~/.bash_profile`)
 so you can call `git diff | gde "^[+-]import"`
+
+useful patterns:
+* `"^[+-]\s*$"` empty lines
+* `"^[+-]\s*}else$"`, `"^[+-]\s*}$"`, `"^[+-]\s*else$"` for `else {` <-> `else`+ newline + `{`
