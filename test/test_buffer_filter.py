@@ -41,7 +41,7 @@ SECOND = 1
 
 class BufferFilterTestWithoutMatchingFilter(unittest.TestCase):
     def setUp(self):
-        self.buffer_filter = BufferFilter('^\+import')
+        self.buffer_filter = BufferFilter(exclude_pattern='^\+import')
 
     def test_is_chunk_start(self):
         self.assertTrue(is_chunk_start(chunk[0]))
@@ -143,7 +143,7 @@ unfiltered_chunk = [
 
 class BufferFilterTestFilter(unittest.TestCase):
     def setUp(self):
-        self.buffer_filter = BufferFilter('^\+ *<')
+        self.buffer_filter = BufferFilter(exclude_pattern='^\+ *<')
 
     def compare_input_lines(self, expected, input_lines):
         output = []
