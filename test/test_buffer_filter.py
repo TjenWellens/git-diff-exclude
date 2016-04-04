@@ -1,5 +1,6 @@
 import unittest
-from code.buffer_filter import BufferFilter, is_chunk_start, has_changed, is_file_start, is_excluded
+from code.buffer_filter import BufferFilter, is_chunk_start, has_changed, is_file_start, is_excluded, \
+    is_excluded_from_any
 
 file_header = [
     'diff --git a/app/src/main/res/values/ids.xml b/app/src/main/res/values/ids.xml',
@@ -179,3 +180,31 @@ class NoPatternTest(unittest.TestCase):
 
     def test_none_excluded(self):
         self.compare_input_lines(FILE_CHANGED, FILE_CHANGED)
+
+
+class MultiPatternTest(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def compare_input_lines(self, expected, input_lines):
+        output = []
+        for line in input_lines:
+            output += self.buffer_filter.add_line_to_buffer(line)
+        output += self.buffer_filter.add_line_to_buffer(None)
+        self.assertListEqual(expected, output)
+
+    def test_none_excluded(self):
+        self.buffer_filter = BufferFilter(exclude_patterns=[])
+        self.compare_input_lines(FILE_CHANGED, FILE_CHANGED)
+
+    def test_is_excluded_from_any_empty(self):
+        exclude_patterns = []
+        buffer_filter = BufferFilter(exclude_patterns=exclude_patterns)
+        line = filtered_line
+        self.assertFalse(is_excluded_from_any(buffer_filter.exclude_patterns, line))
+
+    def test_is_excluded_from_any(self):
+        exclude_patterns = ['^aa', '^bb', '^\+ *<']
+        buffer_filter = BufferFilter(exclude_patterns=exclude_patterns)
+        line = filtered_line
+        self.assertTrue(is_excluded_from_any(buffer_filter.exclude_patterns, line))
