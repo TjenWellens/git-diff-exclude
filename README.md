@@ -52,3 +52,5 @@ so you can call `git diff | gde "^[+-]import"`
 useful patterns:
 * `"^[+-]\s*$"` empty lines
 * `"^[+-]\s*}else$"`, `"^[+-]\s*}$"`, `"^[+-]\s*else$"` for `else {` <-> `else`+ newline + `{`
+
+[regex format](https://docs.python.org/2/library/re.html#regular-expression-syntax)
