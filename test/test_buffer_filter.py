@@ -164,3 +164,18 @@ class BufferFilterTestFilter(unittest.TestCase):
         input_lines = file_header + chunk + unfiltered_chunk
         expected = file_header + unfiltered_chunk
         self.compare_input_lines(expected, input_lines)
+
+
+class NoPatternTest(unittest.TestCase):
+    def setUp(self):
+        self.buffer_filter = BufferFilter()
+
+    def compare_input_lines(self, expected, input_lines):
+        output = []
+        for line in input_lines:
+            output += self.buffer_filter.add_line_to_buffer(line)
+        output += self.buffer_filter.add_line_to_buffer(None)
+        self.assertListEqual(expected, output)
+
+    def test_none_excluded(self):
+        self.compare_input_lines(FILE_CHANGED, FILE_CHANGED)

@@ -2,8 +2,8 @@ import re
 
 
 class BufferFilter:
-    def __init__(self, exclude_pattern):
-        self.exclude_pattern = re.compile(exclude_pattern)
+    def __init__(self, exclude_pattern=None):
+        self.exclude_pattern = re.compile(exclude_pattern) if exclude_pattern is not None else None
         self.buffer = []
         self.file_buffer = []
         self.chunk_buffer = []
@@ -109,4 +109,6 @@ def is_file_start(line):
 
 
 def is_excluded(exclude_pattern, line):
+    if exclude_pattern is None:
+        return False
     return match(exclude_pattern, line)
