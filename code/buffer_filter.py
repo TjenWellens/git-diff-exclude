@@ -4,7 +4,7 @@ import re
 class BufferFilter:
     def __init__(self, exclude_pattern=None, exclude_patterns=[]):
         self.exclude_pattern = re.compile(exclude_pattern) if exclude_pattern is not None else None
-        self.exclude_patterns = map(lambda p: re.compile(p), exclude_patterns)
+        self.exclude_patterns = list(map(lambda p: re.compile(p), exclude_patterns))
         self.buffer = []
         self.file_buffer = []
         self.chunk_buffer = []
