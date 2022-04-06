@@ -1,13 +1,18 @@
 import unittest
+
 from code.buffer_filter import BufferFilter, is_chunk_start, has_changed, is_file_start, is_excluded, \
     is_excluded_from_any
 
+esc = '\u001B'
+color_start = esc + '[1;33m'
+color_end = esc + '[m'
+
 file_header = [
-    'diff --git a/app/src/main/res/values/ids.xml b/app/src/main/res/values/ids.xml',
-    'new file mode 100644',
-    'index 0000000..5fd0ee8',
-    '--- /dev/null',
-    '+++ b/app/src/main/res/values/ids.xml',
+    color_start + 'diff --git a/app/src/main/res/values/ids.xml b/app/src/main/res/values/ids.xml' + color_end,
+    color_start + 'new file mode 100644' + color_end,
+    color_start + 'index 0000000..5fd0ee8' + color_end,
+    color_start + '--- /dev/null' + color_end,
+    color_start + '+++ b/app/src/main/res/values/ids.xml' + color_end,
 ]
 
 chunk = [

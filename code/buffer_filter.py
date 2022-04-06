@@ -88,8 +88,12 @@ class BufferFilter:
 
 
 def match(regex, line):
-    return regex.search(line) is not None
+    return regex.search(strip_color_stuff(line)) is not None
 
+color_stuff = re.compile(r'\u001B[^m]*m')
+
+def strip_color_stuff(line):
+    return re.sub(color_stuff, '', line)
 
 chunk_start = re.compile(r'@@ [^ ]* [^ ]* @@')
 line_added = re.compile(r'^\+')

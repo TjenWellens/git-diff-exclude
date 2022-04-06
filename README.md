@@ -1,5 +1,5 @@
 # git-diff-exclude
-`git diff | python ./script.py "^[+-]import"` to not show blocks with only lines changed that are import statements
+`git diff --color | python ./script.py "^[+-]import"` to not show blocks with only lines changed that are import statements
 
 imagine you have a diff output:
 ```
@@ -24,7 +24,7 @@ index 0b669b6..54652ef 100644
 ```
 
 but you want to ignore all import statements line changes
-`git diff | python ./script.py "^[+-]import"` gives you following output:
+`git diff --color | python ./script.py "^[+-]import"` gives you following output:
 
 ```
 diff --git a/file.txt b/file.txt
@@ -47,7 +47,7 @@ More detailed:
 
 tip: create an alias
 `alias gde='python ~/git-diff-exclude/script.py'` (make it permanent by putting it in `~/.bash_profile`)
-so you can call `git diff | gde "^[+-]import"`
+so you can call `git diff --color | gde "^[+-]import"`
 
 useful patterns:
 * `"^[+-]\s*$"` empty lines
