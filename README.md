@@ -54,3 +54,6 @@ useful patterns:
 * `"^[+-]\s*}else$"`, `"^[+-]\s*}$"`, `"^[+-]\s*else$"` for `else {` <-> `else`+ newline + `{`
 
 [regex format](https://docs.python.org/2/library/re.html#regular-expression-syntax)
+
+## Contributing
+see [contributing.md](./CONTRIBUTING.md)
